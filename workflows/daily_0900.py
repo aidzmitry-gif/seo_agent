@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import argparse
 import sys
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
+from typing import Any
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPOSITORY_ROOT / "src"))
@@ -20,6 +22,8 @@ from seo_agent.collectors import (  # noqa: E402
     YandexMetricaCollector,
     YandexWebmasterCollector,
 )
+from seo_agent.collectors.base import DeltaCollector  # noqa: E402
+from seo_agent.collectors.bitrix24 import Bitrix24FieldMap  # noqa: E402
 from seo_agent.integrations.bitrix_tasks import draft_data_quality_task  # noqa: E402
 from seo_agent.models import CollectionResult, RawLead  # noqa: E402
 from seo_agent.processing.attribution import resolve_attribution  # noqa: E402
@@ -53,37 +57,52 @@ def _source_watermark(state: dict[str, object], source: str) -> dict[str, object
     return dict(stored) if isinstance(stored, dict) else {}
 
 
+def _default_collectors(sources: Mapping[str, Any]) -> tuple[DeltaCollector, ...]:
+    bitrix_config = sources.get("bitrix24", {})
+    if not isinstance(bitrix_config, Mapping):
+        raise ValueError("Bitrix24 source configuration must be a mapping")
+    field_mapping = bitrix_config.get("field_mapping")
+    if field_mapping is not None and not isinstance(field_mapping, Mapping):
+        raise ValueError("Bitrix24 field_mapping must be a mapping")
+    return (
+        Bitrix24Collector(
+            entity_type_id=int(bitrix_config.get("entity_type_id", 1)),
+            field_map=Bitrix24FieldMap.from_config(field_mapping),
+        ),
+        YandexMetricaCollector(),
+        GoogleSearchConsoleCollector(),
+        YandexWebmasterCollector(),
+        GA4Collector(),
+    )
+
+
 def run_daily(
     repository_root: Path = REPOSITORY_ROOT,
     run_date: date | None = None,
     *,
     write_state: bool = False,
     write_report_file: bool = False,
+    collectors: Sequence[DeltaCollector] | None = None,
 ) -> DailyRunResult:
     """Run the safe data-quality-first path with adapters that make no network calls."""
     run_date = run_date or date.today()
     config = load_config(repository_root / "config")
     thresholds = config["thresholds"]["data_quality"]
+    source_config = config["sources"]["sources"]
     store = WatermarkStore(repository_root / "state" / "watermarks.json")
 
     if write_state and not store.claim_run(run_date):
         raise RuntimeError(f"Daily run has already been claimed: {run_date.isoformat()}")
 
     state = store.load()
-    collectors = (
-        Bitrix24Collector(),
-        YandexMetricaCollector(),
-        GoogleSearchConsoleCollector(),
-        YandexWebmasterCollector(),
-        GA4Collector(),
+    active_collectors = (
+        tuple(collectors) if collectors is not None else _default_collectors(source_config)
     )
     results = tuple(
         collector.collect_delta(_source_watermark(state, collector.name))
-        for collector in collectors
+        for collector in active_collectors
     )
-    # Provider-specific raw-to-domain mapping is a deliberate next integration.
-    # The first-stage stubs return no records, but the full safety sequence is kept.
-    raw_records: list[RawLead] = []
+    raw_records: list[RawLead] = [lead for result in results for lead in result.leads]
     normalized_records = [normalize_lead(record) for record in raw_records]
     duplicate_links = find_duplicate_links(normalized_records)
     attributions = [resolve_attribution(record) for record in normalized_records]

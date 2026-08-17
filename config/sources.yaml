@@ -4,6 +4,24 @@ sources:
     enabled: true
     mode: delta
     watermark: [last_success, last_updated_time, last_id]
+    entity_type_id: 1
+    field_mapping:
+      created_at: createdTime
+      updated_at: updatedTime
+      source_type: sourceId
+      origin_id: originId
+      phone:
+      email:
+      call_external_id:
+      form_request_id:
+      utm_source:
+      utm_medium:
+      referrer:
+      landing_url:
+      is_spam:
+      is_test:
+      is_relevant:
+      sales_processable:
   yandex_metrica:
     priority: p0
     enabled: true

@@ -15,6 +15,12 @@ not an autonomous production deployer.
   safe 09:00 workflow skeleton;
 - configuration, operating documentation and executable tests.
 
+The Bitrix24 collector now has an injectable universal-CRM delta contract. Configure
+tenant-specific contact, UTM and qualification fields under
+`config/sources.yaml` → `sources.bitrix24.field_mapping`; blank values remain
+unknown rather than being inferred. It still requires an explicitly approved
+transport and credentials before it can call the API.
+
 ## Layout
 
 - `config/`: policy and threshold contracts.

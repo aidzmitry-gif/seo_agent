@@ -93,6 +93,7 @@ class DataQualityResult:
 class CollectionResult:
     source: str
     records: tuple[Mapping[str, Any], ...] = ()
+    leads: tuple[RawLead, ...] = ()
     next_watermark: Mapping[str, Any] = field(default_factory=dict)
     complete: bool = False
     errors: tuple[str, ...] = ()
