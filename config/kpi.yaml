@@ -1,0 +1,24 @@
+north_star: qualified_site_leads
+metrics:
+  - raw_site_leads
+  - qualified_site_leads
+  - created_deals
+  - won_deals
+  - revenue
+  - lead_to_deal_conversion
+  - deal_to_sale_conversion
+  - qualification_rate
+  - revenue_per_lead
+  - first_response_time
+segments:
+  - source
+  - channel
+  - landing_page
+  - device
+  - region
+  - product_group
+  - query_cluster
+  - lead_type
+  - qualification
+  - deal
+  - revenue

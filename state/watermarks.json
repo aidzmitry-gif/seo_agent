@@ -1,0 +1,8 @@
+{
+  "bitrix24": {"last_success": null, "last_updated_time": null, "last_id": null},
+  "gsc": {"last_complete_date": null},
+  "yandex_metrica": {"last_date": null},
+  "yandex_webmaster": {"last_complete_date": null},
+  "ga4": {"last_date": null},
+  "runs": {}
+}

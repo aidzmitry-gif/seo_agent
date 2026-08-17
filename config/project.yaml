@@ -1,0 +1,16 @@
+project:
+  name: microchips-seo-growth
+  domain: https://microchips.by
+  timezone: Europe/Minsk
+
+business:
+  north_star: qualified_site_leads
+
+cycle:
+  start_date: 2026-08-17
+  duration_days: 91
+  daily_start: "09:00"
+
+working_target:
+  qualified_leads_growth: 0.30
+  provisional: true

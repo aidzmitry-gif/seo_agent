@@ -1,0 +1,16 @@
+qualified_lead:
+  required:
+    - not_spam
+    - not_test
+    - not_duplicate
+    - relevant_request
+    - can_be_processed_by_sales
+
+disqual_reasons:
+  - spam
+  - test
+  - duplicate
+  - irrelevant_request
+  - outside_service_area
+  - cannot_be_processed
+  - invalid_contact

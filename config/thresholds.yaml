@@ -1,0 +1,16 @@
+data_quality:
+  attribution_min: 0.95
+  duplicate_rate_max: 0.02
+
+windows:
+  yesterday: 1
+  short: 7
+  medium: 28
+  baseline: 90
+
+wip:
+  large: 1
+  small: 2
+
+deduplication:
+  temporal_window_days: 7

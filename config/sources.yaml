@@ -1,0 +1,31 @@
+sources:
+  bitrix24:
+    priority: p0
+    enabled: true
+    mode: delta
+    watermark: [last_success, last_updated_time, last_id]
+  yandex_metrica:
+    priority: p0
+    enabled: true
+    mode: delta
+    watermark: [last_date]
+  yandex_webmaster:
+    priority: p1
+    enabled: true
+    mode: delta
+    watermark: [last_complete_date]
+  google_search_console:
+    priority: p1
+    enabled: true
+    mode: delta
+    incomplete_recent_days: 3
+    watermark: [last_complete_date]
+  ga4:
+    priority: p2
+    enabled: false
+    mode: delta
+    watermark: [last_date]
+  server_logs:
+    priority: p1
+    enabled: false
+    mode: delta
